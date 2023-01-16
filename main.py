@@ -18,18 +18,36 @@ class Test(db.Model):
 
 
  
-@app.route("/")
+@app.route('/')
 def hello_world():
    return render_template('index.html')
    
+@app.route('/products')
+def products():
+   return render_template('products.html')
 
-@app.route('/test')
-def test():
-    return render_template('test.html')
+@app.route('/cart')
+def cart():
+   return render_template('cart.html')
 
-@app.route('/home')
-def home():
-    return 'this is my home'
+@app.route('/aboutus')
+def aboutus():
+   return render_template('aboutus.html')
+   
+@app.route('/signup')
+def signup():
+   return render_template('signup.html')
+
+@app.route('/login')
+def login():
+   return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+   return render_template('login.html')
+   
+   
+   
 
 
 app.run(debug=True)
