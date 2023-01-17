@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,url_for
+from flask import Flask,render_template,request,url_for,flash
 from flask import Flask,session,redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
@@ -35,6 +35,16 @@ class User(UserMixin,db.Model):
     email = db.Column(db.String(20),unique=True,nullable=False)
     password=db.Column(db.String(20),nullable=False)
 
+class Cart(db.Model):
+   order_id=db.Column(db.Integer,primary_key=True)
+   email=db.Column(db.String(20))
+   name=db.Column(db.String(20))
+   address=db.Column(db.String(50))
+   pincode=db.Column(db.Integer) 
+   number=db.Column(db.String(12))
+   product=db.Column(db.String(20))
+
+
     #with app.app_context():
     #db.create_all()
    
@@ -47,18 +57,63 @@ def hello_world():
    return render_template('index.html')
    
 @app.route('/products')
+@login_required
 def products():
-   if not User.is_authenticated:
-      return render_template('login.html')
-   else :
-      #username=current_user.username
-      return render_template('products.html',username=current_user.username)
+   
+    
    return render_template('products.html')
 
 
-@app.route('/cart')
+@app.route('/cart',methods=['POST','GET'])
+@login_required
 def cart():
+   if request.method=="POST":
+      email=request.form.get('email')
+      name=request.form.get('name')
+      product=request.form.get('product')
+      address=request.form.get('address')
+      pincode=request.form.get('pincode')
+      number=request.form.get('number')
+
+      query=db.engine.execute(f"INSERT INTO `cart` (`email`,`name`,`product`,`address`,`pincode`,`number`) VALUES('{email}','{name}','{product}','{address}','{pincode}','{number}')")
+      
+
    return render_template('cart.html')
+
+@app.route('/order_details')
+@login_required
+def order_details():
+   em=current_user.email
+   query=db.engine.execute(f"SELECT * FROM `cart` WHERE email='{em}'")
+   return render_template('order_details.html',query=query)
+
+@app.route('/edit/<string:order_id>',methods=['POST','GET'])
+@login_required
+def edit(order_id):
+   posts = Cart.query.filter_by(order_id=order_id).first()
+
+   if request.method=="POST":
+      email=request.form.get('email')
+      name=request.form.get('name')
+      product=request.form.get('product')
+      address=request.form.get('address')
+      pincode=request.form.get('pincode')
+      number=request.form.get('number')
+      db.engine.execute(f"UPDATE `cart` SET  `email` = '{email}', `name` = '{name}', `address` = '{address}', `pincode` = '{pincode}', `number` = '{number}', `product` = '{product}' WHERE `cart`.`order_id` = {order_id}")
+      return redirect('/order_details')
+   return render_template('edit.html',posts=posts)
+
+
+@app.route('/delete/<string:order_id>',methods=['POST','GET'])
+@login_required
+def delete(order_id):
+   db.engine.execute(f"DELETE FROM `cart` WHERE `cart`.`order_id`={order_id}")
+   return redirect('/order_details')
+
+@app.route('/listed')
+@login_required
+def listed():
+   return render_template('listed.html')
 
 @app.route('/aboutus')
 def aboutus():
@@ -101,10 +156,10 @@ def login():
 
       if user and check_password_hash(user.password,password):
          login_user(user)
+         #flash("Logged In","primary")
          return redirect (url_for('products'))
       else :
-         print('invalid credentials')
-
+         #flash("invalid credentials","danger")
          return render_template ('login.html')
 
 
