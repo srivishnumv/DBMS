@@ -6,7 +6,8 @@ from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from flask_login import login_manager,login_user,logout_user,LoginManager
 from flask_login import login_required,current_user
-from flask_mail import Mail,Message
+from twilio.rest import Client
+#from flask_mail import Mail,Message
 
 #from config import config
 import json
@@ -18,7 +19,6 @@ import json
 local_server = True
 app = Flask(__name__)
 app.secret_key='ss'
-
 
 
 
@@ -125,6 +125,18 @@ def cart():
 
       query=db.engine.execute(f"INSERT INTO `cart` (`email`,`name`,`product`,`address`,`pincode`,`number`,`quantity`) VALUES('{email}','{name}','{product}','{address}','{pincode}','{number}','{quantity}')")
      # mail.send_message('S&S Tech Hub',sender=['sstechhub1@gmail.com'],recipients=['srivishnum.v06@gmail.com'],body='Your Order is Confirmed')
+      #SMS Settings
+      account_sid = "AC3f930906fe7849b6438b72b7d613b177"
+      auth_token = "6d78083a88fb70901ea6e42d3978d9f4"
+      client = Client(account_sid, auth_token)
+
+      message = client.messages.create(
+      body="Order Confirmed, Our Payments team will contact you shortly, Thankyou for choosing S&S Tech HUB",
+      from_="+13343800863",
+      to="+91"+number
+     )
+
+      print(message.sid)
 
     return render_template('cart.html')
 
@@ -189,7 +201,9 @@ def aboutus():
    return render_template('aboutus.html')
    
 @app.route('/log')
+@login_required
 def logs():
+   
    posts=Log_trigger.query.all()
    return render_template('log.html',posts=posts)
    
