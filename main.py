@@ -6,7 +6,9 @@ from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from flask_login import login_manager,login_user,logout_user,LoginManager
 from flask_login import login_required,current_user
-from flask_mail import Mail
+from flask_mail import Mail,Message
+
+#from config import config
 import json
 
 #with open('config.json','r') as c:
@@ -19,14 +21,16 @@ app.secret_key='ss'
 
 
 
+
 #SMTP Mail Server settings
 
 #app.config.update(
- #MAIL_SERVER='smtp-mail.outlook.com',
+ 
+ #MAIL_SERVER='smtp.gmail.com ',
   #MAIL_PORT='587',
-  # MAIL_USE_TLS = True,
-   #MAIL_USER_SSL=False,
-    #MAIL_USERNAME=parms['gmail-user'],
+   #MAIL_USE_TLS = True,
+   #MAIL_USE_SSL=False,
+   #MAIL_USERNAME=parms['gmail-user'],
    #MAIL_PASSWORD=parms['gmail-password']
 
 #)
@@ -72,6 +76,14 @@ class Product(db.Model):
     email=db.Column(db.String(50))
     price=db.Column(db.Integer)
 
+class Log_trigger(db.Model):
+    tid=db.Column(db.Integer,primary_key=True)
+    order_id=db.Column(db.Integer)
+    email=db.Column(db.String(50))
+    name=db.Column(db.String(50))
+    action=db.Column(db.String(50))
+    timestamp=db.Column(db.String(50))
+
     #with app.app_context():
     #db.create_all()
    
@@ -112,7 +124,7 @@ def cart():
       quantity=request.form.get('quantity')
 
       query=db.engine.execute(f"INSERT INTO `cart` (`email`,`name`,`product`,`address`,`pincode`,`number`,`quantity`) VALUES('{email}','{name}','{product}','{address}','{pincode}','{number}','{quantity}')")
-      #mail.send_message('S&S Tech Hub',sender=[parms['gmail-user']],recipients=['srivishnum.v06@gmail.com'],body='Your Order is Confirmed, Our Payments team will contact u regarding payments, Thankyou for choosing S&S Tech Hub')
+     # mail.send_message('S&S Tech Hub',sender=['sstechhub1@gmail.com'],recipients=['srivishnum.v06@gmail.com'],body='Your Order is Confirmed')
 
     return render_template('cart.html')
 
@@ -176,6 +188,11 @@ def addproduct():
 def aboutus():
    return render_template('aboutus.html')
    
+@app.route('/log')
+def logs():
+   posts=Log_trigger.query.all()
+   return render_template('log.html',posts=posts)
+   
 @app.route('/signup',methods=['GET','POST'])
 def signup():
 
@@ -228,6 +245,8 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
    
    
    
