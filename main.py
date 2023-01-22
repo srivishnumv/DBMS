@@ -127,7 +127,7 @@ def cart():
      # mail.send_message('S&S Tech Hub',sender=['sstechhub1@gmail.com'],recipients=['srivishnum.v06@gmail.com'],body='Your Order is Confirmed')
       #SMS Settings
       account_sid = "AC3f930906fe7849b6438b72b7d613b177"
-      auth_token = "6d78083a88fb70901ea6e42d3978d9f4"
+      auth_token = "e70e9179083c967c75e9e6c43d96cbe7"
       client = Client(account_sid, auth_token)
 
       message = client.messages.create(
