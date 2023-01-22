@@ -6,12 +6,31 @@ from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from flask_login import login_manager,login_user,logout_user,LoginManager
 from flask_login import login_required,current_user
+from flask_mail import Mail
+import json
 
+#with open('config.json','r') as c:
+   #parms = json.load(c)["parms"]
 
 #connecting the db
 local_server = True
 app = Flask(__name__)
 app.secret_key='ss'
+
+
+
+#SMTP Mail Server settings
+
+#app.config.update(
+ #MAIL_SERVER='smtp-mail.outlook.com',
+  #MAIL_PORT='587',
+  # MAIL_USE_TLS = True,
+   #MAIL_USER_SSL=False,
+    #MAIL_USERNAME=parms['gmail-user'],
+   #MAIL_PASSWORD=parms['gmail-password']
+
+#)
+#mail=Mail(app)
 
 login_manager=LoginManager(app)
 login_manager.login_view='login'
@@ -43,7 +62,15 @@ class Cart(db.Model):
    pincode=db.Column(db.Integer) 
    number=db.Column(db.String(12))
    product=db.Column(db.String(20))
+   quantity=db.Column(db.Integer) 
 
+class Product(db.Model):
+    pid=db.Column(db.Integer,primary_key=True)
+    p_name=db.Column(db.String(50))
+    p_desc=db.Column(db.String(1000))
+    p_img=db.Column(db.String(1000))
+    email=db.Column(db.String(50))
+    price=db.Column(db.Integer)
 
     #with app.app_context():
     #db.create_all()
@@ -57,7 +84,7 @@ def hello_world():
    return render_template('index.html')
    
 @app.route('/products')
-@login_required
+#@login_required
 def products():
    
     
@@ -67,18 +94,27 @@ def products():
 @app.route('/cart',methods=['POST','GET'])
 @login_required
 def cart():
-   if request.method=="POST":
+
+   #pro=Product.query.all()
+   #query=db.engine.execute(f"SELECT * FROM `product`")
+   
+    #product2=db.engine.execute("SELECT * FROM `product`")
+   
+
+       
+    if request.method=="POST":
       email=request.form.get('email')
       name=request.form.get('name')
       product=request.form.get('product')
       address=request.form.get('address')
       pincode=request.form.get('pincode')
       number=request.form.get('number')
+      quantity=request.form.get('quantity')
 
-      query=db.engine.execute(f"INSERT INTO `cart` (`email`,`name`,`product`,`address`,`pincode`,`number`) VALUES('{email}','{name}','{product}','{address}','{pincode}','{number}')")
-      
+      query=db.engine.execute(f"INSERT INTO `cart` (`email`,`name`,`product`,`address`,`pincode`,`number`,`quantity`) VALUES('{email}','{name}','{product}','{address}','{pincode}','{number}','{quantity}')")
+      #mail.send_message('S&S Tech Hub',sender=[parms['gmail-user']],recipients=['srivishnum.v06@gmail.com'],body='Your Order is Confirmed, Our Payments team will contact u regarding payments, Thankyou for choosing S&S Tech Hub')
 
-   return render_template('cart.html')
+    return render_template('cart.html')
 
 @app.route('/order_details')
 @login_required
@@ -111,9 +147,30 @@ def delete(order_id):
    return redirect('/order_details')
 
 @app.route('/listed')
-@login_required
+#@login_required
 def listed():
-   return render_template('listed.html')
+   query=db.engine.execute(f"SELECT * FROM `product`")
+   return render_template('listed.html',query=query)
+
+@app.route('/addproduct',methods=['GET','POST'])
+@login_required
+def addproduct():
+
+   if request.method=="POST":
+
+      email=request.form.get('email')
+      p_name=request.form.get('p_name')
+      p_desc=request.form.get('p_desc')
+      p_img=request.form.get('p_img')
+      price=request.form.get('price')
+      
+
+      query=db.engine.execute(f"INSERT INTO `product` (`email`,`p_name`,`p_desc`,`p_img`,`price`) VALUES('{email}','{p_name}','{p_desc}','{p_img}','{price}')")
+      
+
+   
+
+   return render_template('addproduct.html')
 
 @app.route('/aboutus')
 def aboutus():

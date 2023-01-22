@@ -13,7 +13,7 @@ Cart
       <div class="card" style="width: 18rem;">
         <img src="static/images/cart.jpg" class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">Products</h5>
+          <h5 class="card-title">Featured Products</h5>
           
         </div>
         <ul class="list-group list-group-flush">
@@ -53,18 +53,18 @@ Cart
     <input type="text" class="form-control" id="name" name="name" placeholder="Full Name" required>
   <br>
   <div class="form-group">
- 
-    <select class="form-control" id="pid" name="product" placeholder="Product ID" required>
-      <option selected>Select Product</option>
-      <option value="FPV Drone">FPV Drone</option>
-      <option value="Humanoid">Humanoid</option>
-      <option value="Motion Sensing Robot">Motion Sensing Robot</option>
-      <option value="Crane Robot">Crane Robot</option>
 
-    </select>
-   
-   </div>
-  </div>
+            
+                                      
+    <select class="form-control" id="product" name="product"  required>
+            <option selected>Select Product</option>
+            <option value="FPV Drone">FPV Drone</option>
+            <option value="Humanoid">Humanoid</option>
+            <option value="Motion Sensing Robot">Motion Sensing Robot</option>
+            <option value="Crane Robot">Crane Robot</option>
+          </select> 
+     </div>
+  
 <br>
    <div class="form-group">
     
@@ -84,6 +84,12 @@ Cart
   <div class="form-group">
 
     <input type="number" class="form-control" id="number" name="number" placeholder="Phone Number" required>
+  
+  </div>
+  <br>
+  <div class="form-group">
+
+    <input type="number" class="form-control" id="quantity" name="quantity" placeholder="quantity" required>
   
   </div>
 
