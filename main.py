@@ -131,7 +131,8 @@ def cart():
       client = Client(account_sid, auth_token)
 
       message = client.messages.create(
-      body="Order Confirmed, Our Payments team will contact you shortly, Thankyou for choosing S&S Tech HUB",
+      #body="Order Confirmed, Our Payments team will contact you shortly, Thankyou for choosing S&S Tech HUB",
+      body="Your order  is confirmed, Our payments team will contact you shortly, Thankyou for choosing S&S Tech HUB",
       from_="+13343800863",
       to="+91"+number
      )
