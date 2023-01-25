@@ -267,7 +267,7 @@ def logout():
    
 
 
-app.run(debug=True)
+app.run(debug=False,host='0.0.0.0')
 
 
 #username=current_user.username
